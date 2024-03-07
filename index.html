@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Конвертер единиц и механический счетчик</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .converter {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .counter {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 3px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 350px;
+        }
+
+        .converter input,
+        .counter input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 70%;
+        }
+
+        .converter label,
+        .counter label {
+            font-weight: bold;
+        }
+
+        .wheel {
+            font-size: larger;
+            font-weight: 900; 
+            cursor: pointer;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 0 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .wheel::before,
+        .wheel::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .wheel::before {
+            border-width: 0 5px 10px 5px;
+            border-color: transparent transparent #000 transparent;
+            top: -10px;
+            left: calc(50% - 5px);
+        }
+
+        .wheel::after {
+            border-width: 10px 5px 0 5px;
+            border-color: #000 transparent transparent transparent;
+            bottom: -10px;
+            left: calc(50% - 5px);
+        }
+
+        #display {
+            display: block;
+            margin: 50px auto;
+            padding: 10px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            width: 200px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #minus {
+            font-size: larger;
+            font-weight: 900;  
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 0 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            width: 6px;
+            text-align: center;
+        }
+
+        #comma {
+            font-size: larger;
+            font-weight: 900;           
+            margin-top: 15px;
+        }
+
+        #mechanical-counter {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #mechanical-counter input {
+            width: 40px;
+            font-size: 20px;
+            padding: 5px;
+            text-align: center;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #mechanical-counter button {
+            font-size: 20px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="converter">
+        <label for="mpg">MPG (Мили на галон)</label>
+        <label for="lpk">l/100km (Литров на 100 км)</label>
+        <input id="mpg" type="number" oninput="convert('mpg', 'lpk', (val) => 235.215 / val)"
+            onclick="setActiveInput('mpg')" />
+        <input id="lpk" type="number" oninput="convert('lpk', 'mpg', (val) => 235.215 / val)"
+            onclick="setActiveInput('lpk')" />
+        <label for="f">F (Фаренгейты)</label>
+        <label for="c">C (Градусы Цельсия)</label>
+        <input id="f" type="number" oninput="convert('f', 'c', (val) => (val - 32) * 5/9)"
+            onclick="setActiveInput('f')" />
+        <input id="c" type="number" oninput="convert('c', 'f', (val) => val * 9/5 + 32)"
+            onclick="setActiveInput('c')" />
+        <label for="mi">Mi (Мили)</label>
+        <label for="km">Km (Километры)</label>
+        <input id="mi" type="number" oninput="convert('mi', 'km', 1.60934)" onclick="setActiveInput('mi')" />
+        <input id="km" type="number" oninput="convert('km', 'mi', 1/1.60934)" onclick="setActiveInput('km')" />
+        <label for="gal">Gal (Галлоны)</label>
+        <label for="l">L (Литры)</label>
+        <input id="gal" type="number" oninput="convert('gal', 'l', 3.78541)" onclick="setActiveInput('gal')" />
+        <input id="l" type="number" oninput="convert('l', 'gal', 1/3.78541)" onclick="setActiveInput('l')" />
+    </div>
+    <div class="counter">
+        <div id="minus">+</div>
+        <div class="wheel" id="wheel1" contenteditable="true">0</div>
+        <div class="wheel" id="wheel2" contenteditable="true">0</div>
+        <div class="wheel" id="wheel3" contenteditable="true">0</div>
+        <div class="comma" id="comma">,</div>
+        <div class="wheel" id="wheel4" contenteditable="true">0</div>
+    </div>
+
+    <script>
+        let activeInput = null;
+
+        function setActiveInput(id) {
+            activeInput = document.getElementById(id);
+        }
+
+        function convert(inputId, outputId, conversionFactor) {
+            var input = document.getElementById(inputId).value;
+            var output = document.getElementById(outputId);
+            var result;
+
+            if (typeof conversionFactor === 'function') {
+                result = conversionFactor(input);
+            } else {
+                result = input * conversionFactor;
+            }
+
+            output.value = result.toFixed(2);
+        }
+
+        const wheels = document.querySelectorAll('.wheel');
+        const display = document.getElementById('display');
+        const minus = document.getElementById('minus');
+        const counterInput = document.getElementById('counter-input');
+
+        let values = [0, 0, 0, 0];
+        let isNegative = false;
+        let counterValue = 0;
+
+        function updateDisplay() {
+            if (activeInput) {
+                activeInput.value = (isNegative ? '-' : '') + values.slice(0, 3).join('') + '.' + values[3];
+                activeInput.dispatchEvent(new Event('input'));
+            }
+        }
+
+        function rotateWheel(index, increment) {
+            values[index] = (values[index] + increment + 10) % 10;
+            wheels[index].textContent = values[index];
+            counterValue = parseFloat(values.slice(0, 3).join('') + '.' + values[3]);
+            updateDisplay();
+        }
+
+        wheels.forEach((wheel, index) => {
+            wheel.addEventListener('click', () => rotateWheel(index, 1));
+            wheel.addEventListener('wheel', (event) => {
+                const increment = event.deltaY > 0 ? 1 : -1;
+                rotateWheel(index, increment);
+            });
+            let touchStartPosY = 0;
+            wheel.addEventListener('touchstart', (event) => {
+                touchStartPosY = event.touches[0].screenY;
+            });
+
+            wheel.addEventListener('touchmove', (event) => {
+                const currentPageY = Math.round(event.touches[0].screenY);
+                if (touchStartPosY === currentPageY) return;
+                const increment = touchStartPosY - currentPageY > 0 ? 1 : -1;
+                rotateWheel(index, increment);
+                touchStartPosY = currentPageY;
+            });
+        });
+
+        minus.addEventListener('click', () => {
+            isNegative = !isNegative;
+            minus.textContent = isNegative ? '-' : '+';
+            updateDisplay();
+        });
+
+    </script>
+</body>
+
+</html>
