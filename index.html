@@ -171,7 +171,7 @@
         <div class="wheel" id="wheel4" contenteditable="true">0</div>
     </div>
 
-    <script>
+  <script>
         let activeInput = null;
 
         function setActiveInput(id) {
@@ -241,6 +241,21 @@
             updateDisplay();
         });
 
+        function updateCounterDisplay() {
+            counterInput.value = counterValue;
+        }
+
+        function incrementCounter() {
+            counterValue++;
+            updateCounterDisplay();
+        }
+
+        function decrementCounter() {
+            counterValue--;
+            updateCounterDisplay();
+        }
+
+        updateCounterDisplay();
     </script>
 </body>
 
