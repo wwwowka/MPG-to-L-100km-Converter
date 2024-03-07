@@ -4,8 +4,9 @@
 <head>
     <title>Конвертер единиц и механический счетчик 0.1</title>
     <style>
-       body, html {
-    height: 100%;
+      body, html {
+    height: 100vh; /* Use viewport height to avoid resizing when keyboard opens */
+    width: 100vw; /* Use viewport width to avoid resizing when keyboard opens */
     margin: 0;
     overflow: hidden;
     display: flex;
@@ -15,6 +16,7 @@
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
 }
+
 
 .converter {
     display: grid;
