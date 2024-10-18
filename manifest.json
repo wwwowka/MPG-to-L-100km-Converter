@@ -7,12 +7,12 @@
     "theme_color": "#333",
     "icons": [
         {
-            "src": "MPG-to-L-100km-Converter/icon-192.png", 
+            "src": "https://wwwowka.github.io/MPG-to-L-100km-Converter/icon-192.png", // Полный путь к иконке 192x192
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "MPG-to-L-100km-Converter/icon-512.png",
+            "src": "https://wwwowka.github.io/MPG-to-L-100km-Converter/icon-512.png", // Полный путь к иконке 512x512
             "sizes": "512x512",
             "type": "image/png"
         }
