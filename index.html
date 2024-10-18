@@ -3,6 +3,16 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MPG to l/100km Converter +</title>
+
+    <!-- Manifest link -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Указать путь к иконкам -->
+    <link rel="icon" href="/icon-192.png"> 
+    <link rel="apple-touch-icon" href="/icon-512.png"> 
+
+    <meta name="theme-color" content="#ffffff">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -87,6 +97,7 @@
             </div>
         </form>
     </div>
+
     <script>
         function convert(inputId, outputId, conversionFactor) {
             var input = document.getElementById(inputId).value;
@@ -100,6 +111,17 @@
             }
 
             output.value = result.toFixed(2);
+        }
+
+        // Регистрация Service Worker для PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                    console.log('Service Worker зарегистрирован с областью:', registration.scope);
+                }, function(err) {
+                    console.log('Ошибка при регистрации Service Worker:', err);
+                });
+            });
         }
     </script>
 </body>
